@@ -473,6 +473,7 @@
 #define BOARD_PANDA_M4                7007  // Panda_M4
 #define BOARD_MKS_TINYBEE             7008  // MKS TinyBee based on ESP32 (with I2S stepper stream)
 #define BOARD_ENWI_ESPNP              7009  // enwi ESPNP based on ESP32 (with I2S stepper stream)
+#define BOARD_ESP32_CUSTOM            7010  // Rutilea ESP32 custom board
 
 //
 // SAMD51 ARM Cortex-M4
