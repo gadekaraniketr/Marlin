@@ -327,6 +327,9 @@
  *** "T" Codes ***
  *
  * T0-T3 - Select an extruder (tool) by index: "T<n> F<units/min>"
+ * --------------------------------------------------------------------------------------------------------------
+ * G1000 - Draw spiral from arcs
+ * --------------------------------------------------------------------------------------------------------------
  */
 
 #include "../inc/MarlinConfig.h"
@@ -495,6 +498,10 @@ private:
 
   #if ENABLED(ARC_SUPPORT)
     static void G2_G3(const bool clockwise);
+  #endif
+
+  #if ENABLED(ARC_SUPPORT)
+    static void G2000_G3000(const bool clockwise);
   #endif
 
   static void G4();

@@ -360,6 +360,10 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 2: case 3: G2_G3(parser.codenum == 2); break;        // G2: CW ARC, G3: CCW ARC
       #endif
 
+      #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
+        case 2000: case 3000: G2000_G3000(parser.codenum == 2000); break;        // G2000: CW Spiral, G3000: CCW Spiral
+      #endif
+
       case 4: G4(); break;                                        // G4: Dwell
 
       #if ENABLED(BEZIER_CURVE_SUPPORT)
