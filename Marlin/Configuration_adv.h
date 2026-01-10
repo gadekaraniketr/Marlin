@@ -2403,7 +2403,7 @@
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
 // #define BUFSIZE 4
-#define BUFSIZE 64
+#define BUFSIZE 512
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of flash (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
@@ -4233,7 +4233,7 @@
 //
 // M42 - Set pin states
 //
-//#define DIRECT_PIN_CONTROL
+#define DIRECT_PIN_CONTROL
 
 //
 // M43 - display pin status, toggle pins, watch pins, watch endstops & toggle LED, test servo probe
