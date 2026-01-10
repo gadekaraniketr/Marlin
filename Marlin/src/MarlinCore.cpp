@@ -1167,12 +1167,16 @@ void setup() {
   while (!MYSERIAL1.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
 
   #if HAS_MULTI_SERIAL && !HAS_ETHERNET
-    #ifndef BAUDRATE_2
-      #define BAUDRATE_2 BAUDRATE
+  #ifndef BAUDRATE_2
+  #define BAUDRATE_2 BAUDRATE
+  #endif
+    #if HAS_BLUETOOTH
+      MYSERIAL2.begin("Quick Printer");
+    #else
+      MYSERIAL2.begin(BAUDRATE_2);
+      serial_connect_timeout = millis() + 1000UL;
+      while (!MYSERIAL2.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
     #endif
-    MYSERIAL2.begin(BAUDRATE_2);
-    serial_connect_timeout = millis() + 1000UL;
-    while (!MYSERIAL2.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
     #ifdef SERIAL_PORT_3
       #ifndef BAUDRATE_3
         #define BAUDRATE_3 BAUDRATE

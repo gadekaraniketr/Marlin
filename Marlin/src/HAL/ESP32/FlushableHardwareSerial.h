@@ -27,8 +27,19 @@
 #include "../../core/serial_hook.h"
 
 class FlushableHardwareSerial : public HardwareSerial {
-public:
+  public:
   FlushableHardwareSerial(int uart_nr) : HardwareSerial(uart_nr) {}
 };
 
 extern Serial1Class<FlushableHardwareSerial> flushableSerial;
+
+#if HAS_BLUETOOTH
+#include <BluetoothSerial.h>
+
+class FlushableBtSerial : public BluetoothSerial {
+public:
+  FlushableBtSerial() : BluetoothSerial() {}
+};
+
+extern Serial1Class<FlushableBtSerial> btSerial;
+#endif
