@@ -30,8 +30,8 @@
 #include "../../module/planner.h"
 
 /**
- * G2000: Clockwise Spiral
- * G3000: Counterclockwise Spiral
+ * G1002: Clockwise Spiral
+ * G1003: Counterclockwise Spiral
  * - Command uses G2 or G3 commands internally and enqueued.
  * 
  * Parameters:
@@ -46,57 +46,67 @@
  *    - Counterclockwise spiral centered at (currentX+50, currentY+0) with default spacing doing 1 full circle
  * 
  */
-void GcodeSuite::G2000_G3000(const bool clockwise) {
+void GcodeSuite::G1002_G1003(const bool clockwise) {
   if (!MOTION_CONDITIONS) return;
   
   // 1. Parse Parameters
-  const float x_pos  = parser.linearval('X', 0.0f);
-  const float y_pos  = parser.linearval('Y', 0.0f);
+  const float x_center  = parser.linearval('X', 0.0f);
+  const float y_center  = parser.linearval('Y', 0.0f);
   const float r_init = parser.linearval('R', 5.0f);
   const float step   = parser.linearval('S', 5.0f);
   const int   turns  = parser.intval('P', 1);
   const int   feedrate = parser.intval('F', 3000);
-  
-  float current_r = r_init;
-  float cur_x = current_position.x;
-  float cur_y = current_position.y;
 
   // 2. Initial Positioning (Move to start of first arc)
-  // We move to X - r_init relative to center
   char cmd[64];
-  sprintf_P(cmd, PSTR("G0 X%f Y%f F%d"), x_pos, y_pos, feedrate);
-  queue.enqueue_one(cmd);
-  // sprintf_P(cmd, PSTR("G1 X%f Y%f F%d"), cur_x - r_init, cur_y, feedrate);
-  // queue.enqueue_one(cmd);
 
-  // float track_x = cur_x - r_init;
+  // 2.1 Move to start point for lead in
+  // Use G0, it is used for rapid moves such as travel moves.
+  // Later can be moved to G1004 if needed.
+  sprintf_P(cmd, PSTR("G0 X%f Y%f F%d"), x_center, y_center, feedrate);
+  queue.enqueue_one(cmd);
+
+  // 2.2 Lead in as arc to starting point
+  // from now onwards all moves are G1 since we are cutting material
+  sprintf_P(cmd, PSTR("%s X%f Y%f I%f J0 F%d"),
+    (clockwise ? "G2" : "G3"),  // command
+    (clockwise ? (x_center - r_init) : (x_center + r_init)),  // target X
+    y_center, // target Y
+    (clockwise ? (-(r_init * 0.5)) : (r_init * 0.5)),  // offset I
+    feedrate);
+  queue.enqueue_one(cmd);
+
+  float current_r = r_init;
+  float cur_x = (clockwise ? (x_center - r_init) : (x_center + r_init));
+  float cur_y = y_center;
+  
+  float track_x = cur_x;
 
   // 3. Loop to generate arcs
-  // for (int i = 0; i < (turns * 2); i++) {
-  //     float next_r = current_r + step;
-  //     float diameter = current_r + next_r;
-      
-  //     float target_x, offset_i;
+  for (int i = 0; i < (turns * 2); i++) {
 
-  //     if (i % 2 == 0) {
-  //         target_x = track_x + diameter;
-  //         offset_i = current_r;
-  //     } else {
-  //         target_x = track_x - diameter;
-  //         offset_i = -current_r;
-  //     }
+    float diameter = current_r * (clockwise ? 2.0f : -2.0f);
+    float target_x, offset_i;
 
-  //     // Generate the G2 or G3 string
-  //     // G2 = CW, G3 = CCW
-  //     sprintf_P(cmd, PSTR("%s X%f Y%f I%f J0"), 
-  //               (clockwise ? "G2" : "G3"), target_x, cur_y, offset_i);
-      
-  //     queue.enqueue_one(cmd);
+    if (i % 2 == 0) {
+      target_x = track_x + diameter;
+      offset_i = clockwise ? current_r : -current_r;
+    } else {
+      target_x = track_x - diameter;
+      offset_i = clockwise ? -current_r : current_r;
+    }
 
-  //     // Update tracking
-  //     track_x = target_x;
-  //     current_r = next_r;
-  // }
+    // Generate the G2 or G3 string
+    // G2 = CW, G3 = CCW
+    sprintf_P(cmd, PSTR("%s X%f Y%f I%f J0"), 
+      (clockwise ? "G2" : "G3"), target_x, cur_y, offset_i);
+    
+    queue.enqueue_one(cmd);
+
+    // Update tracking
+    track_x = target_x;
+    current_r += step;
+  }
 }
 
 #endif // ARC_SUPPORT

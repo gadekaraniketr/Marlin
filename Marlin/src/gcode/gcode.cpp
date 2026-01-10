@@ -361,7 +361,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       #endif
 
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
-        case 2000: case 3000: G2000_G3000(parser.codenum == 2000); break;        // G2000: CW Spiral, G3000: CCW Spiral
+        case 1002: case 1003: G1002_G1003(parser.codenum == 1002); break;        // G1002: CW Spiral, G1003: CCW Spiral
       #endif
 
       case 4: G4(); break;                                        // G4: Dwell

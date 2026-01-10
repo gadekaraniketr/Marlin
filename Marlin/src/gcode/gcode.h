@@ -328,7 +328,7 @@
  *
  * T0-T3 - Select an extruder (tool) by index: "T<n> F<units/min>"
  * --------------------------------------------------------------------------------------------------------------
- * G1000 - Draw spiral from arcs
+ * G1002 & G1003 - Draw spiral from arcs (CW & CCW).
  * --------------------------------------------------------------------------------------------------------------
  */
 
@@ -501,7 +501,7 @@ private:
   #endif
 
   #if ENABLED(ARC_SUPPORT)
-    static void G2000_G3000(const bool clockwise);
+    static void G1002_G1003(const bool clockwise);
   #endif
 
   static void G4();
