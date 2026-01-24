@@ -104,7 +104,7 @@ void GcodeSuite::G1002_G1003(const bool clockwise) {
   float track_x = cur_x;
 
   // 3. Loop to generate arcs
-  for (int i = 0; i < (turns * 2); i++) {
+  for (int i = 0; i < ((turns * 2) + 1); i++) {
 
     float diameter = current_r * (clockwise ? 2.0f : -2.0f);
     float target_x, offset_i;
@@ -124,15 +124,24 @@ void GcodeSuite::G1002_G1003(const bool clockwise) {
     
     queue.enqueue_one(cmd);
 
+    //  At the end of the last arc, stop the feeder
+    if (i > ((turns * 2) - 2))
+    {
+      // wiat for any previous moves to complete
+      sprintf_P(cmd, PSTR("M400"));
+      queue.enqueue_one(cmd);
+
+      // stop feeder
+      sprintf_P(cmd, PSTR("M42 P2 S0"));
+      queue.enqueue_one(cmd);
+    }
+
     // Update tracking
     track_x = target_x;
     current_r += step;
   }
 
   // 4. End delay
-  // stop feeder
-  sprintf_P(cmd, PSTR("M42 P2 S0"));
-  queue.enqueue_one(cmd);
 
   // reverse feeder to reduce back lash
   sprintf_P(cmd, PSTR("M42 P4 S255"));
