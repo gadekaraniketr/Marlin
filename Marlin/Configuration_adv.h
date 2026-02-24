@@ -2403,7 +2403,7 @@
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
 // #define BUFSIZE 4
-#define BUFSIZE 512
+#define BUFSIZE 768
 
 // Transmission to Host Buffer Size
 // To save 386 bytes of flash (and TX_BUFFER_SIZE+3 bytes of RAM) set to 0.
