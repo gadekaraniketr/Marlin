@@ -390,7 +390,49 @@ void startOrResumeJob() {
     }
   }
 
+  #define START_BUTTON_PIN 15
+  #define DEBOUNCE_DELAY   50  // Milliseconds to wait for signal to stabilize
+
+  void check_start_button_debounced() {
+    static bool last_stable_state = HIGH;  // The confirmed state
+    static bool last_raw_state = HIGH;     // The state in the previous loop
+    static millis_t last_debounce_time = 0; // When the state last changed
+
+    bool current_raw_state = READ(START_BUTTON_PIN);
+
+    // If the physical signal changed (due to noise or press)
+    if (current_raw_state != last_raw_state) {
+      last_debounce_time = millis(); // Reset the timer
+    }
+
+    // If the signal has been the same for longer than the debounce delay
+    if ((millis() - last_debounce_time) > DEBOUNCE_DELAY) {
+      // If the confirmed state has actually changed
+      if (current_raw_state != last_stable_state) {
+        last_stable_state = current_raw_state;
+
+        // ACTION: Trigger on Falling Edge (Press to GND)
+        if (last_stable_state == LOW) {
+          if (card.isMounted() && !card.isFileOpen()) {
+            SERIAL_ECHOLNPGM("Button Confirmed!");
+            if (card.fileExists("/test.gco"))
+            {
+              card.openAndPrintFile("/test.gco");
+            }
+            else
+            {
+              SERIAL_ECHOLNPGM("Error: /test.gco not found on SD Card.");
+            }
+          }
+        }
+      }
+    }
+    last_raw_state = current_raw_state;
+  }
+
 #endif // HAS_MEDIA
+
+
 
 /**
  * Minimal management of Marlin's core activities:
@@ -407,6 +449,7 @@ void startOrResumeJob() {
  */
 inline void manage_inactivity(const bool no_stepper_sleep=false) {
 
+  check_start_button_debounced();
   queue.get_available_commands();
 
   const millis_t ms = millis();
