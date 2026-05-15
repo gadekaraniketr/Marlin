@@ -51,6 +51,9 @@
 // ------------------------
 
 #define MYSERIAL1 flushableSerial
+#if HAS_BLUETOOTH
+#define MYSERIAL2 btSerial
+#endif
 
 #if ENABLED(ESP3D_WIFISUPPORT)
   typedef ForwardSerial1Class< decltype(Serial2Socket) > DefaultSerial1;

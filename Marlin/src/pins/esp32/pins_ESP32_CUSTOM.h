@@ -62,4 +62,14 @@
 //
 // SPI - Optional for SD card
 //
+#define SD_MOSI_PIN                           23
+#define SD_MISO_PIN                           19
+#define SD_SCK_PIN                            18
 #define SDSS                                   5
+
+// Feeder pins
+#define FEEDER_FWD_PIN                         2
+#define FEEDER_REV_PIN                         4
+
+// Start button pin
+#define START_BUTTON_PIN                       13

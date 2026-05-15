@@ -26,4 +26,8 @@
 
 Serial1Class<FlushableHardwareSerial> flushableSerial(false, 0);
 
+#if HAS_BLUETOOTH
+Serial1Class<FlushableBtSerial> btSerial(false);
+#endif
+
 #endif

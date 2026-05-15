@@ -327,6 +327,10 @@
  *** "T" Codes ***
  *
  * T0-T3 - Select an extruder (tool) by index: "T<n> F<units/min>"
+ * --------------------------------------------------------------------------------------------------------------
+ * G1002 & G1003 - Draw spiral from arcs (CW & CCW).
+ * G1004 & G1005 - Draw spiral from arcs (CW & CCW) on table.
+ * --------------------------------------------------------------------------------------------------------------
  */
 
 #include "../inc/MarlinConfig.h"
@@ -495,6 +499,8 @@ private:
 
   #if ENABLED(ARC_SUPPORT)
     static void G2_G3(const bool clockwise);
+    static void G1002_G1003(const bool clockwise);
+    static void G1004_G1005(const bool clockwise);
   #endif
 
   static void G4();

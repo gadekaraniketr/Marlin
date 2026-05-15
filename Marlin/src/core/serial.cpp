@@ -53,7 +53,7 @@ MAP(_N_LBL, LOGICAL_AXIS_NAMES); MAP(_SP_N_LBL, LOGICAL_AXIS_NAMES);
 #endif
 
 // Step 2: For multiserial, handle the second serial port as well
-#if HAS_MULTI_SERIAL
+#if HAS_MULTI_SERIAL || HAS_BLUETOOTH
   #if HAS_ETHERNET
     // We need a definition here
     SerialLeafT2 msSerial2(ethernet.have_telnet_client, MYSERIAL2, false);

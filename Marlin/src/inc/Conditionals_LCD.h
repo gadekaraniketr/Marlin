@@ -1506,6 +1506,9 @@
 #if SERIAL_PORT_2 == -2
   #define HAS_ETHERNET 1
 #endif
+#if SERIAL_PORT_2 == -3
+  #define HAS_BLUETOOTH 1
+#endif
 
 /**
  * This setting is also used by M109 when trying to calculate

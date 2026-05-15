@@ -96,6 +96,7 @@ struct ConditionalSerial : public SerialBase< ConditionalSerial<SerialT> > {
   NO_INLINE size_t write(uint8_t c) { if (condition) return out.write(c); return 0; }
   void flush()                      { if (condition) out.flush();  }
   void begin(long br)               { out.begin(br); }
+  void begin(String s, bool b)      { out.begin(s, b); }
   void end()                        { out.end(); }
 
   void msgDone() {}
