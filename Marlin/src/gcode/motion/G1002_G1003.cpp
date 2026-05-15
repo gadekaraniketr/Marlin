@@ -90,7 +90,7 @@ void GcodeSuite::G1002_G1003(const bool clockwise) {
     // D2 => F, D4 => R
     // Both off = STOP
     // 3. Start feeder forward
-    sprintf_P(cmd, PSTR("M42 P2 S255"));
+    sprintf_P(cmd, PSTR("M42 P%d S255"), FEEDER_FWD_PIN);
     queue.enqueue_one(cmd);
     // card.write_command(cmd);
     
@@ -159,12 +159,12 @@ void GcodeSuite::G1002_G1003(const bool clockwise) {
         // card.write_command(cmd);
 
         // stop feeder forward
-        sprintf_P(cmd, PSTR("M42 P2 S0"));
+        sprintf_P(cmd, PSTR("M42 P%d S0"), FEEDER_FWD_PIN);
         queue.enqueue_one(cmd);
         // card.write_command(cmd);
 
         // start reverse feeder
-        sprintf_P(cmd, PSTR("M42 P4 S255"));
+        sprintf_P(cmd, PSTR("M42 P%d S255"), FEEDER_REV_PIN);
         queue.enqueue_one(cmd);
         // card.write_command(cmd);
       }
@@ -211,7 +211,7 @@ void GcodeSuite::G1002_G1003(const bool clockwise) {
     // card.write_command(cmd);
 
     // stop reverse feeder
-    sprintf_P(cmd, PSTR("M42 P4 S0"));
+    sprintf_P(cmd, PSTR("M42 P%d S0"), FEEDER_REV_PIN);
     queue.enqueue_one(cmd);
     // card.write_command(cmd);
     // card.closefile();

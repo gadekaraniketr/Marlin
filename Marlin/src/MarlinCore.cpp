@@ -390,7 +390,7 @@ void startOrResumeJob() {
     }
   }
 
-  #define START_BUTTON_PIN 15
+  // #define START_BUTTON_PIN 15
   #define DEBOUNCE_DELAY   50  // Milliseconds to wait for signal to stabilize
 
   void check_start_button_debounced() {
