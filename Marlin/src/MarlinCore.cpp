@@ -390,7 +390,6 @@ void startOrResumeJob() {
     }
   }
 
-  // #define START_BUTTON_PIN 15
   #define DEBOUNCE_DELAY   50  // Milliseconds to wait for signal to stabilize
 
   void check_start_button_debounced() {
@@ -413,15 +412,28 @@ void startOrResumeJob() {
 
         // ACTION: Trigger on Falling Edge (Press to GND)
         if (last_stable_state == LOW) {
-          if (card.isMounted() && !card.isFileOpen()) {
-            SERIAL_ECHOLNPGM("Button Confirmed!");
-            if (card.fileExists("/test.gco"))
-            {
-              card.openAndPrintFile("/test.gco");
+          SERIAL_ECHOLNPGM("Button Pressed");
+          if (IS_SD_PRINTING())
+          {
+            SERIAL_ECHOLNPGM("Button Pressed: Aborting SD Print!");
+            abortSDPrinting();
+          }
+          else
+          {
+            if (card.isMounted() && !card.isFileOpen()) {
+              SERIAL_ECHOLNPGM("Button Confirmed!");
+              if (card.fileExists("/test.gco"))
+              {
+                card.openAndPrintFile("/test.gco");
+              }
+              else
+              {
+                SERIAL_ECHOLNPGM("Error: /test.gco not found on SD Card.");
+              }
             }
             else
             {
-              SERIAL_ECHOLNPGM("Error: /test.gco not found on SD Card.");
+              SERIAL_ECHOLNPGM("Error: SD Card not mounted or file already open.");
             }
           }
         }

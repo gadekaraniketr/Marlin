@@ -1,25 +1,3 @@
-/**
- * Marlin 3D Printer Firmware
- * Copyright (c) 2020 MarlinFirmware [https://github.com/MarlinFirmware/Marlin]
- *
- * Based on Sprinter and grbl.
- * Copyright (c) 2011 Camiel Gubbels / Erik van der Zalm
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- *
- */
-
 #include "../../inc/MarlinConfig.h"
 
 #if ENABLED(ARC_SUPPORT)
@@ -30,24 +8,19 @@
 #include "../../module/planner.h"
 #include "../../sd/cardreader.h"
 
-#define QUAD_ARCS_PER_TURN 4
-
 /**
- * G1004: Clockwise Spiral on Table
- * G1005: Counterclockwise Spiral on Table
+ * G1006: Lines on Table
  * 
  * Parameters:
- * - R specifies the initial radius (default: 5mm)
- * - P specifies the number of full circles to do (default: 1)
- * - S specifies the spacing between each revolution (default: 1mm)
+ * - L specifies the length (default: 5mm)
  * - D specifies start delay in milliseconds (default: 0ms)
  * - C specifies end/cut delay in milliseconds (default: 0ms)
  * - F specifies feedrate in mm/min (default: 3000mm/min)
  * - H specifies nozzle hole diameter mm (default: 0mm)
+ * - X specifies horizontal spacing
+ * - Y specifies vertical spacing
  * Example:
- * 1. G1004 R10 P3 S5 D0 C0 F3000 H4 X10 Y10
-  *    - Clockwise spiral on table with initial radius 10mm, 5mm spacing doing 3 full circles, no start/end delay, feedrate 3000mm/min, nozzle hole diameter 4mm, horizontal spacing 10mm, vertical spacing 10mm
- * 2. G1005 R10 P3 S5 D2 C2 F3000 H4
+ * 1. G1006 L100 D200 C100 F3000 H4
  * 
  */
 
@@ -75,33 +48,27 @@ float get_spiral_current_y_center(const int row, const float row_height, const f
   }
 }
 
-void GcodeSuite::G1004_G1005(const bool clockwise) {
+void GcodeSuite::G1006() {
   if (!MOTION_CONDITIONS) return;
   
   // 1. Parse Parameters
-  const int r_init        = parser.intval('R', 5);
-  const float turns       = parser.floatval('P', 3.0f);
-  const int gap_size      = parser.intval('S', 5);
-  const int feedrate      = parser.intval('F', 3000);
+  const int length        = parser.intval('L', 5);
   const int start_delay   = parser.intval('D', 0);
   const int end_delay     = parser.intval('C', 0);
+  const int feedrate      = parser.intval('F', 3000);
   const int hole_diameter = parser.intval('H', 0);
   const int horizontal_spacing  = parser.intval('X', 10);
   const int vertical_spacing    = parser.intval('Y', 10);
 
-  const int step_size = hole_diameter + gap_size;
-  const float spiral_end_radius = r_init + (round(turns) * step_size);
-
   char cmd[64];
 
   // 2. bed size is 400x270mm
-  // we can devide bed into a grid of cells depending on the spacing between spirals and the size of the spiral
+  // we can devide bed into a grid of cells depending on the spacing between lines and the length of the line
+  if (length > max(X_BED_SIZE, Y_BED_SIZE))
+    return;
 
-  const float cell_width  = spiral_end_radius * 2.0f;
-  const float cell_height = spiral_end_radius * 2.0f;
-
-  const int cols = min(6, int(X_BED_SIZE / (cell_width + horizontal_spacing)));
-  const int rows = min(4, int(Y_BED_SIZE / (cell_height + vertical_spacing)));
+  const int cols = min(6, int(X_BED_SIZE / (length + horizontal_spacing)));
+  const int rows = min(4, int(Y_BED_SIZE / (hole_diameter + vertical_spacing)));
 
   // 3. for each cell in the grid
   // calculate center position for each cell
@@ -121,7 +88,7 @@ void GcodeSuite::G1004_G1005(const bool clockwise) {
 
   if (card.isFileOpen())
   {
-    // SERIAL_ECHOLNPGM("Generating Shape to SD...");
+    SERIAL_ECHOLNPGM("Generating Shape to SD...");
 
     for (int row = 0; row < rows; row++)
     {
@@ -131,11 +98,11 @@ void GcodeSuite::G1004_G1005(const bool clockwise) {
                     (row_even) ? col++ : col--)
       {
         // --------------------------------------------------------------------------------------------------------------------
-        const float center_x    = get_spiral_current_x_center(col, cell_width, horizontal_spacing);
-        const float center_y    = get_spiral_current_y_center(row, cell_height, vertical_spacing);
-        const float init_r      = r_init;
-        const float spacing     = gap_size;
-        const float hole_dia    = hole_diameter;
+        const float center_x    = 0; //get_spiral_current_x_center(col, cell_width, horizontal_spacing);
+        const float center_y    = 0; //get_spiral_current_y_center(row, cell_height, vertical_spacing);
+        const float init_r      = 0; //r_init;
+        const float spacing     = 0; //gap_size;
+        const float hole_dia    = 0; //hole_diameter;
 
         const float step_size           = spacing + hole_dia;
         const float step_size_half      = step_size * 0.5f;

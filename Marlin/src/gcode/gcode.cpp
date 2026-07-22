@@ -356,12 +356,14 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
       case 0: case 1:                                             // G0: Fast Move, G1: Linear Move
         G0_G1(TERN_(HAS_FAST_MOVES, parser.codenum == 0)); break;
 
+      case 1006:                                             // G1006: Lines on table
+        G1006(); break;
+
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
         case 2: case 3: G2_G3(parser.codenum == 2); break;        // G2: CW ARC, G3: CCW ARC
       #endif
 
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
-        case 1002: case 1003: G1002_G1003(parser.codenum == 1002); break;        // G1002: CW Spiral, G1003: CCW Spiral
         case 1004: case 1005: G1004_G1005(parser.codenum == 1004); break;        // G1004: CW Spiral on table, G1005: CCW Spiral on table
       #endif
 

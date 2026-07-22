@@ -499,8 +499,8 @@ private:
 
   #if ENABLED(ARC_SUPPORT)
     static void G2_G3(const bool clockwise);
-    static void G1002_G1003(const bool clockwise);
     static void G1004_G1005(const bool clockwise);
+    static void G1006();
   #endif
 
   static void G4();
